@@ -10,6 +10,6 @@
 
 ---
 
-A print shop’s quote illustrates direct prompt injection. A security team’s endpoint handoff illustrates indirect injection: one ticket comment can change a summary while the device status stays the same. The article explains how to check the evidence behind each reply and where the application should enforce permissions.
+A chatbot conversation and a print shop quote show how direct input can change a reply. A Discord moderation report shows how indirect input can change who gets named. The write-up includes a [sample CSV](assets/messages.csv) and a short PowerShell query for checking the author of a message.
 
 To read offline, download the repository and open [index.html](index.html).
