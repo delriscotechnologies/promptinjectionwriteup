@@ -1,7 +1,7 @@
 <h1 align="center">DIRECT AND INDIRECT PROMPT INJECTION</h1>
 
 <p align="center">
-  How user messages, webpages, and emails can change an AI assistant’s response.
+  How a user message or a retrieved document can steer an AI assistant’s response.
 </p>
 
 <p align="center">
@@ -10,6 +10,6 @@
 
 ---
 
-The examples come from [Hack The Box Academy’s Prompt Injection Attacks course](https://academy.hackthebox.com/course/preview/prompt-injection-attacks). The article follows a drink order, a test key, and a Discord moderation report to show what changes in the model’s reply and what the application still needs to verify.
+A print shop’s quote illustrates direct prompt injection. A security team’s endpoint handoff illustrates indirect injection: one ticket comment can change a summary while the device status stays the same. The article explains how to check the evidence behind each reply and where the application should enforce permissions.
 
-To read the HTML offline, download the repository and open [index.html](index.html).
+To read offline, download the repository and open [index.html](index.html).

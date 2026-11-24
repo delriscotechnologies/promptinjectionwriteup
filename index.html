@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101112">
-  <meta name="description" content="How direct and indirect prompt injection work, with Hack The Box Academy examples of a quoted price, a disclosed test key, and a Discord moderation report.">
+  <meta name="description" content="How direct and indirect prompt injection work, explained through a print shop’s checkout and an analyst’s endpoint incident handoff.">
   <title>Direct and Indirect Prompt Injection</title>
   <meta property="og:type" content="article">
   <meta property="og:title" content="Direct and Indirect Prompt Injection">
   <meta property="og:url" content="https://delriscotechnologies.github.io/promptinjectionwriteup/">
-  <meta property="og:description" content="How a user message or a retrieved document can change an AI assistant’s response. Examples from Hack The Box Academy.">
+  <meta property="og:description" content="A print order and an endpoint ticket show how input can change an assistant’s answer, and what the application must verify before acting.">
   <meta property="og:image" content="https://delriscotechnologies.github.io/promptinjectionwriteup/assets/prompt-injection-cover.jpg">
   <meta property="og:image:width" content="1440">
   <meta property="og:image:height" content="758">
@@ -29,7 +29,7 @@
     .cover-art { display: block; overflow: hidden; mix-blend-mode: screen; }
     .cover-art img { display: block; width: 200%; height: auto; transform: translateX(-50%); }
     h1 { margin: 0; color: var(--ink); font: 400 clamp(3.35rem, 7.7vw, 5.18rem)/.96 "Instrument Serif", Georgia, serif; letter-spacing: -.022em; }
-    h1 span { display: block; }
+    h1 { max-inline-size: 6.9em; }
     p { margin: 0 0 1.22em; }
     p:last-child { margin-bottom: 0; }
     .lead { color: var(--ink); font-size: 1.07em; line-height: 1.65; }
@@ -75,37 +75,49 @@
   </div>
   <main><article aria-labelledby="title">
     <header class="masthead">
-      <h1 id="title">Direct and Indirect <span>Prompt Injection</span></h1>
+      <h1 id="title">Direct and Indirect Prompt Injection</h1>
       <a class="cover-art" href="assets/prompt-injection-cover.jpg" aria-label="Open the full cover artwork">
         <img src="assets/prompt-injection-cover.jpg" width="1440" height="758" alt="" decoding="async">
       </a>
     </header>
 
-    <p class="lead">A language model reads the application’s instructions and the text it needs to process in the same context. Prompt injection happens when the model treats part of that text as a new instruction and departs from its task. A <strong>direct injection</strong> comes through the user’s message. An <strong>indirect injection</strong> comes through content the application reads, such as an email.</p>
+    <p class="lead"><strong>Direct prompt injection</strong> happens when a user’s message steers a model away from the task or rules set by the application. In <strong>indirect prompt injection</strong>, the instruction comes from material the application asks the model to read, such as a ticket, a webpage, or an email. The person requesting the summary and the person who wrote the material may have entirely different permissions.</p>
 
-    <p>In <a href="https://academy.hackthebox.com/course/preview/prompt-injection-attacks">Hack The Box Academy’s <em>Prompt Injection Attacks</em> course</a>, an assistant takes drink orders. The application supplies the menu; the customer supplies the order. One Leet Cola and two Glitch Energy drinks come to €13. When the customer claims there’s a sale, the assistant uses that price and quotes €5 for the same items.</p>
+    <p>Consider what a support application sends to a model. A system message defines the assistant’s job. The user supplies a question. The application may then retrieve a customer record and include it for context. These messages can have distinct roles, but the model still uses their contents to compose one answer. A sentence can look like an instruction even when it belongs to the record being reviewed. Whether that sentence carries any authority is a decision for the application.</p>
+
+    <p>A print shop makes the direct case easier to see. A customer can ask its assistant for two posters and choose delivery instead of pickup. Both are choices the shop lets the customer make. The customer can also mention a promotion. That claim might be true, and the assistant could check it. The mistake would be to treat the claim itself as permission to change a price the shop controls.</p>
+
+    <p>Suppose a poster costs €5 and delivery costs €3. The assistant quotes €13 for two posters. If the assistant accepts an unverified sale price of €1 per poster, its next quote drops to €5. The quantities and shipping method have stayed the same. The difference comes entirely from the source the assistant used for one unit price.</p>
 
     <table class="quote">
-      <caption>Prices in the assistant’s two replies</caption>
-      <thead><tr><th scope="col">Order item</th><th scope="col">First quote</th><th scope="col">Revised quote</th></tr></thead>
+      <caption>Two quotes for the same print order</caption>
+      <thead><tr><th scope="col">Order item</th><th scope="col">Catalog price</th><th scope="col">Revised quote</th></tr></thead>
       <tbody>
-        <tr><th scope="row">1 × Leet Cola</th><td>€3</td><td>€3</td></tr>
-        <tr><th scope="row">2 × Glitch Energy</th><td>€10</td><td>€2</td></tr>
+        <tr><th scope="row">Two posters</th><td>€10</td><td>€2</td></tr>
+        <tr><th scope="row">Delivery</th><td>€3</td><td>€3</td></tr>
       </tbody>
       <tfoot><tr><th scope="row">Quoted total</th><td>€13</td><td>€5</td></tr></tfoot>
     </table>
 
-    <p>A separate order attempt returns “Invalid Model Response.” That error doesn’t establish that checkout verified the price. Checkout should calculate the total from its own catalog and discount rules. To say someone paid €5, we’d need a matching payment record. The example contains no order or payment record.</p>
+    <p>The customer has seen a lower quote. That is enough to explain a pricing complaint, but it doesn’t establish an €8 undercharge. Checkout should calculate its own total from the catalog and discount rules. I’d check the order record for the amount the shop accepted and the payment record for the amount actually charged. Someone who saw €5 and paid €13 still has a reason to contact support.</p>
 
-    <p>In another exercise, the system prompt gives the chatbot its rules. It also contains a test key the chatbot must keep private. The chatbot refuses the first request but returns the correct key in a later reply. Revealing the internal rules is <strong>system prompt leakage</strong>; revealing the key is <strong>sensitive data disclosure</strong>. A different reply looked like an encoded copy of the key. Once decoded, it didn’t match the test value.</p>
+    <p>A response that passes a format check can still contain the wrong price. Both €13 and €5 fit in a numeric field. Conversely, an “Invalid Model Response” error can mean a required field was missing. It establishes that one response was rejected, but it doesn’t tell us which business rules the application enforced. To investigate a pricing issue, I’d check what the server accepted and which price list it used.</p>
 
-    <p>In the Discord example, the moderator’s request stays the same: identify members who posted about their pets. What changes is the weekly CSV export. The first report lists two users. After a member accuses the server owner of posting about a cat, the next report lists three. The assistant adds the owner without identifying a pet post the owner wrote.</p>
+    <p>Direct injection can also affect what the assistant reveals. Imagine a test chatbot whose system prompt contains an internal routing rule and a made-up reference code. Repeating the rule exposes part of the application’s instructions: <strong>system prompt leakage</strong>. Returning the code to someone who should not see it is <strong>sensitive data disclosure</strong>. A single reply can do both, but learning how the chatbot routes a ticket is different from obtaining the protected value.</p>
 
-    <p>The export includes usernames, and the course wraps the comments in code tags. Those labels identify where the text came from. They can’t establish that an accusation is true or authorize a ban. A moderator would need to see the original post and its author. The course documents a false accusation; no ban is shown.</p>
+    <p>In a controlled test, a refusal establishes what happened on that request. A later reply that looks like an encoded version of the reference code has to decode to the known test value before I’d count it as a disclosure. A plausible-looking string is not enough. In a real application, credentials belong in the service that uses them, and the signed-in user’s access to a record should be checked before the record is sent to the model.</p>
 
-    <p>In the webpage exercise, the assistant first summarizes a page with a “HelloWorld” heading. After the page changes, the same summarization task produces a pizza dough recipe. An email summary works the same way: the recipient sets the task, but the sender supplies the text. The sender could influence the summary without ever seeing it.</p>
+    <p>Now consider an <strong>indirect injection</strong> during a shift handoff. An analyst asks an assistant to summarize an endpoint ticket. The application retrieves an automated event, the endpoint connector’s status, and comments from several people. A contractor who can comment on the ticket cannot necessarily isolate a laptop or close the case. Their words still reach the model alongside the records that describe those actions.</p>
 
-    <p>If an assistant summarizes alerts, I can check its claims against the source events. If it can close a case or isolate an endpoint, the application must verify the operator’s permission for that case or device before acting. I’d check the case history or endpoint audit log to confirm the change.</p>
+    <p>Suppose the event records an isolation request and the connector is still waiting for the laptop to acknowledge it. A ticket comment tries to steer the handoff into reporting containment as complete. If the assistant follows it, the next analyst may read “endpoint isolated” and move on. The analyst’s request never changed. The new instruction came from the ticket, and the resulting summary upgraded a request into a reported outcome without an acknowledgment from the device.</p>
+
+    <p>An incorrect statement alone is not necessarily prompt injection. Someone might honestly believe the laptop is isolated and write that in a comment. Repeating their mistake is a source-verification failure. Treating the comment as an instruction about what conclusion to write is the injection. The distinction also matters in a moderation queue: a generated report can accuse the wrong person. The original post identifies its author, and a moderation audit entry shows whether a ban was applied.</p>
+
+    <p>Webpages and email give outside authors the same opportunity. A supplier controls the wording on its maintenance page; the analyst asking for a summary decides what they want to know. If the page tries to influence which outages the assistant reports, the analyst can end up with an incomplete summary. An email sender likewise controls the message body and may never see the summary delivered to the recipient. Read-only access limits what the assistant can change, but a person can still act on a misleading answer.</p>
+
+    <p>Keeping the ticket fields separate or labeling a passage as an email body helps trace its source. Those labels grant no permissions. I’d give a summarizer read access and put state changes behind a service that checks the authenticated operator, the requested action, and its target. For an action such as isolating a laptop, the approval screen should name the actual device so a reviewer can compare it with the evidence.</p>
+
+    <p>If an assistant summarizes alerts for me, I can compare its claims with event IDs, timestamps, and hostnames. If it can close a case or isolate an endpoint, I also want the authorization decision and the receiving system’s result. A closed ticket confirms a change in the case system. For the laptop, I’d check that the endpoint reported isolation as applied. Acknowledging receipt of a request is a different event.</p>
   </article></main>
 </body>
 </html>
