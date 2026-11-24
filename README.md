@@ -10,7 +10,7 @@
 
 ---
 
-This write-up documents a controlled lab with five LLM apps: a chatbot that keeps a secret key in its system prompt, a drink ordering bot, a Discord moderation report, a webpage summarizer, and an email summarizer.
+This write-up documents a controlled lab with four LLM apps: a chatbot that keeps a secret key in its system prompt, a Discord moderation report, a webpage summarizer, and an email summarizer.
 
 Each example shows how the payload reaches the model, what changes in the response, and which controls reduce the risk.
 
