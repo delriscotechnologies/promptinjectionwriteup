@@ -10,6 +10,6 @@
 
 ---
 
-A chatbot conversation and a print shop quote show how direct input can change a reply. A Discord moderation report shows how indirect input can change who gets named. The write-up includes a [sample CSV](assets/messages.csv) and a short PowerShell query for checking the author of a message.
+A chatbot exchange shows what a refusal tells us and how to verify a possible disclosure. A Discord moderation report shows how indirect input can change who gets named. The write-up includes a [sample CSV](assets/messages.csv) and a short PowerShell query for checking the author of a message.
 
 To read offline, download the repository and open [index.html](index.html).
