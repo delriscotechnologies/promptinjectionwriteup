@@ -1,7 +1,7 @@
 <h1 align="center">DIRECT AND INDIRECT PROMPT INJECTION</h1>
 
 <p align="center">
-  How a user message or a retrieved document can steer an AI assistant’s response.
+  A prompt injection lab for leaking a system prompt and steering LLM apps through chat messages, webpages, and emails.
 </p>
 
 <p align="center">
@@ -10,6 +10,13 @@
 
 ---
 
-A chatbot exchange shows what a refusal tells us and how to verify a possible disclosure. A Discord moderation example shows how a comment can change who gets named in a report. The [fictional sample CSV](assets/messages.csv) and PowerShell query show how to check message authorship.
+This write-up documents a controlled lab with five LLM apps: a chatbot that keeps a secret key in its system prompt, a drink ordering bot, a Discord moderation report, a webpage summarizer, and an email summarizer.
 
-To read offline, download the repository and open [index.html](index.html).
+Each example shows how the payload reaches the model, what changes in the response, and which controls reduce the risk.
+
+> Use these techniques only on systems you own or are explicitly authorized to test. Keys are redacted, model responses are shortened, and the sample data is fictional.
+
+## References
+
+- [OWASP: LLM01:2025 Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
+- [Greshake et al.: Not what you’ve signed up for](https://arxiv.org/abs/2302.12173)
