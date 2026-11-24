@@ -1,33 +1,25 @@
 # Direct and Indirect Prompt Injection
 
-In **direct prompt injection**, an instruction in the user’s message steers the model away from its intended task. In **indirect prompt injection**, the instruction comes from content the application reads, such as a webpage, an email, or a chat export. The person who wrote that content may never interact with the assistant.
+A language model reads the application’s instructions and the text it needs to process in the same context. Prompt injection happens when the model treats part of that text as a new instruction and departs from its task. A **direct injection** comes through the user’s message. An **indirect injection** comes through content the application reads, such as an email.
 
-## Direct Prompt Injection
+In [Hack The Box Academy’s *Prompt Injection Attacks* course](https://academy.hackthebox.com/course/preview/prompt-injection-attacks), an assistant takes drink orders. The application supplies the menu; the customer supplies the order. One Leet Cola and two Glitch Energy drinks come to €13. When the customer claims there’s a sale, the assistant uses that price and quotes €5 for the same items.
 
-In a Hack The Box course example, a chatbot’s system prompt contains a test key and a rule against revealing it. The chatbot refuses the first request, then returns the correct key in another exchange. The refusal tells us what happened once; it does not establish that the key was protected.
+*Prices in the assistant’s two replies*
 
-Quoting the internal rule is **system prompt leakage**. Returning the key is **sensitive data disclosure**. A reply can do both, but each claim needs evidence. One answer looked like an encoded copy of the key. When decoded, it did not match the test value.
+| Order item | First quote | Revised quote |
+| :--- | ---: | ---: |
+| 1 × Leet Cola | €3 | €3 |
+| 2 × Glitch Energy | €10 | €2 |
+| **Quoted total** | **€13** | **€5** |
 
-The ordering assistant quotes **€13** for a cola and two energy drinks. After the user describes a sale, it quotes **€5** for the same items. The screenshots show a change in the displayed total. The example includes neither an order record showing that checkout accepted €5 nor a payment confirmation showing that anyone paid it.
+A separate order attempt returns “Invalid Model Response.” That error doesn’t establish that checkout verified the price. Checkout should calculate the total from its own catalog and discount rules. To say someone paid €5, we’d need a matching payment record. The example contains no order or payment record.
 
-## Indirect Prompt Injection
+In another exercise, the system prompt gives the chatbot its rules. It also contains a test key the chatbot must keep private. The chatbot refuses the first request but returns the correct key in a later reply. Revealing the internal rules is **system prompt leakage**; revealing the key is **sensitive data disclosure**. A different reply looked like an encoded copy of the key. Once decoded, it didn’t match the test value.
 
-A Discord moderator gives the assistant a weekly CSV export and asks which users broke a rule against pet posts. One comment accuses the server owner of posting about a cat. The assistant adds the owner to its list without identifying a pet post the owner wrote. The report contains a false accusation; no ban is documented.
+In the Discord example, the moderator’s request stays the same: identify members who posted about their pets. What changes is the weekly CSV export. The first report lists two users. After a member accuses the server owner of posting about a cat, the next report lists three. The assistant adds the owner without identifying a pet post the owner wrote.
 
-In the webpage example, the assistant returns a pizza dough recipe when asked to summarize a page. With email, the recipient asks for a summary, but the sender supplies the text. An instruction in that email could change what the recipient reads even if the sender never sees the result.
+The export includes usernames, and the course wraps the comments in code tags. Those labels identify where the text came from. They can’t establish that an accusation is true or authorize a ban. A moderator would need to see the original post and its author. The course documents a false accusation; no ban is shown.
 
-[![How a user message changes a quote and a Discord export changes a moderation report.](assets/direct-indirect-prompt-injection.png)](assets/direct-indirect-prompt-injection.png)
+In the webpage exercise, the assistant first summarizes a page with a “HelloWorld” heading. After the page changes, the same summarization task produces a pizza dough recipe. An email summary works the same way: the recipient sets the task, but the sender supplies the text. The sender could influence the summary without ever seeing it.
 
-## What the Application Should Enforce
-
-Check the signed-in user’s permissions before retrieving records for the model. Keep service credentials out of the model’s context. Tags can identify a passage as an email body or a Discord comment, but they cannot grant access or authorize an action.
-
-The checkout service should [calculate the total](https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Payment_Gateway_Integration_Cheat_Sheet.html#1-sending-order-data) from its own catalog, item quantities, and approved discounts. For a proposed ban, show the original message and its author to a moderator. The moderation service should verify the moderator’s permissions and approval before applying the ban.
-
-## Final Takeaway
-
-If an assistant summarizes alerts, I can compare its claims with the source events. If it can close a case or isolate an endpoint, the application must independently verify that the operator is authorized to make that change on that specific case or device. I’d check the case history or endpoint audit log to see what actually changed.
-
-## Further Reading
-
-OWASP GenAI Security Project: [Prompt Injection](https://genai.owasp.org/llm2026/llm012026-prompt-injection/) · [System Prompt Leakage](https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/).
+If an assistant summarizes alerts, I can check its claims against the source events. If it can close a case or isolate an endpoint, the application must verify the operator’s permission for that case or device before acting. I’d check the case history or endpoint audit log to confirm the change.
