@@ -19,4 +19,3 @@ Each example shows how the payload reaches the model and what changes in the res
 ## References
 
 - [OWASP: LLM01:2025 Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
-- [Greshake et al.: Not what you’ve signed up for](https://arxiv.org/abs/2302.12173)
