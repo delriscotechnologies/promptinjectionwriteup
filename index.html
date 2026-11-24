@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#111213">
+  <meta name="author" content="Cristian Del Risco">
+  <meta name="description" content="Direct and indirect prompt injection explained through checkout, moderation, and email examples, with the evidence and application checks each case requires.">
+  <title>Direct and Indirect Prompt Injection</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+  <style>
+    :root { color-scheme: dark; --bg: #111213; --text: #e9e8e5; --muted: #aaafb3; --line: #373a3d; --accent: #9db4c9; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 400 clamp(1.04rem, 1vw + .65rem, 1.16rem)/1.7 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { width: min(740px, calc(100% - 2.5rem)); margin-inline: auto; }
+    header { padding-block: clamp(3rem, 9vw, 6.5rem) 2.1rem; border-bottom: 1px solid var(--line); }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; text-wrap: balance; }
+    h1 { max-width: 17ch; margin: 0 0 1.1rem; font-size: clamp(2.75rem, 7.5vw, 4.85rem); line-height: 1.04; letter-spacing: -.045em; }
+    .byline, figcaption, footer { font-size: .875rem; color: var(--muted); }
+    .byline { margin: 0; }
+    .lede { margin: 1.8rem 0 0; font-size: 1.08em; }
+    section { margin-block: clamp(2.5rem, 5vw, 3.8rem); }
+    h2 { margin: 0 0 1rem; font-size: clamp(1.75rem, 4vw, 2.4rem); line-height: 1.15; letter-spacing: -.028em; }
+    p { margin: 0 0 1.05em; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 650; }
+    a { color: var(--accent); text-underline-offset: .19em; }
+    a:hover { text-decoration-thickness: .12em; }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    figure { margin: 2rem 0 0; }
+    .diagram { display: block; cursor: zoom-in; }
+    .diagram img { display: block; width: 100%; height: auto; border: 1px solid var(--line); }
+    figcaption { margin-top: .65rem; line-height: 1.5; }
+    .further { border-top: 1px solid var(--line); padding-top: 1.8rem; }
+    .further h2 { font-size: 1.55rem; }
+    footer { display: flex; flex-wrap: wrap; gap: .5rem 2rem; justify-content: space-between; border-top: 1px solid var(--line); padding: 1.25rem 0 2.5rem; }
+    .progress { position: fixed; z-index: 1; inset: 0 0 0 auto; width: 2px; pointer-events: none; }
+    .progress span { display: block; height: 100%; background: var(--accent); transform: scaleY(0); transform-origin: top; }
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --text: #111; --muted: #444; --line: #bbb; --accent: #26445d; }
+      main { width: auto; } header { padding-top: 0; } section { margin-block: 1.4rem; }
+      h2 { break-after: avoid; } figure { break-inside: avoid; } .progress, footer, figcaption a { display: none; }
+    }
+  </style>
+  <script src="reading-progress.js" defer></script>
+</head>
+<body id="top">
+  <div class="progress" data-reading-progress role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+  <main>
+  <article aria-labelledby="article-title">
+    <header>
+      <h1 id="article-title">Direct and Indirect Prompt Injection</h1>
+      <p class="byline">Cristian Del Risco · <time datetime="2026-11-23">November 23, 2026</time></p>
+      <p class="lede">In <strong>direct prompt injection</strong>, an instruction in the user’s message steers the model away from its intended task. In <strong>indirect prompt injection</strong>, the instruction comes from content the application reads, such as a webpage, an email, or a chat export. The person who wrote that content may never interact with the assistant.</p>
+    </header>
+
+    <section aria-labelledby="direct-prompt-injection">
+      <h2 id="direct-prompt-injection">Direct Prompt Injection</h2>
+      <p>In a Hack The Box course example, a chatbot’s system prompt contains a test key and a rule against revealing it. The chatbot refuses the first request, then returns the correct key in another exchange. The refusal tells us what happened once; it does not establish that the key was protected.</p>
+      <p>Quoting the internal rule is <strong>system prompt leakage</strong>. Returning the key is <strong>sensitive data disclosure</strong>. A reply can do both, but each claim needs evidence. One answer looked like an encoded copy of the key. When decoded, it did not match the test value.</p>
+      <p>The ordering assistant quotes <strong>€13</strong> for a cola and two energy drinks. After the user describes a sale, it quotes <strong>€5</strong> for the same items. The screenshots show a change in the displayed total. The example includes neither an order record showing that checkout accepted €5 nor a payment confirmation showing that anyone paid it.</p>
+    </section>
+
+    <section aria-labelledby="indirect-prompt-injection">
+      <h2 id="indirect-prompt-injection">Indirect Prompt Injection</h2>
+      <p>A Discord moderator gives the assistant a weekly CSV export and asks which users broke a rule against pet posts. One comment accuses the server owner of posting about a cat. The assistant adds the owner to its list without identifying a pet post the owner wrote. The report contains a false accusation; no ban is documented.</p>
+      <p>In the webpage example, the assistant returns a pizza dough recipe when asked to summarize a page. With email, the recipient asks for a summary, but the sender supplies the text. An instruction in that email could change what the recipient reads even if the sender never sees the result.</p>
+      <figure>
+        <a class="diagram" href="assets/direct-indirect-prompt-injection.png" aria-label="Open the comparison diagram at full size">
+          <img src="assets/direct-indirect-prompt-injection.png" width="2800" height="1925" loading="lazy" decoding="async" alt="Direct: a chat message changes a quote; checkout verifies the price. Indirect: a Discord comment changes a moderation report; a reviewer checks the original post.">
+        </a>
+        <figcaption>How the input reaches the model and where the application checks the result. <a href="assets/direct-indirect-prompt-injection.png">View full size</a>.</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="what-the-application-should-enforce">
+      <h2 id="what-the-application-should-enforce">What the Application Should Enforce</h2>
+      <p>Check the signed-in user’s permissions before retrieving records for the model. Keep service credentials out of the model’s context. Tags can identify a passage as an email body or a Discord comment, but they cannot grant access or authorize an action.</p>
+      <p>The checkout service should <a href="https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Payment_Gateway_Integration_Cheat_Sheet.html#1-sending-order-data">calculate the total</a> from its own catalog, item quantities, and approved discounts. For a proposed ban, show the original message and its author to a moderator. The moderation service should verify the moderator’s permissions and approval before applying the ban.</p>
+    </section>
+
+    <section aria-labelledby="final-takeaway">
+      <h2 id="final-takeaway">Final Takeaway</h2>
+      <p>If an assistant summarizes alerts, I can compare its claims with the source events. If it can close a case or isolate an endpoint, the application must independently verify that the operator is authorized to make that change on that specific case or device. I’d check the case history or endpoint audit log to see what actually changed.</p>
+    </section>
+
+    <section aria-labelledby="further-reading" class="further">
+      <h2 id="further-reading">Further Reading</h2>
+      <p>OWASP GenAI Security Project: <a href="https://genai.owasp.org/llm2026/llm012026-prompt-injection/">Prompt Injection</a> · <a href="https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/">System Prompt Leakage</a>.</p>
+    </section>
+  </article>
+  <footer><a href="https://github.com/delriscotechnologies/promptinjectionwriteup">View on GitHub</a><a href="#top">Back to top</a></footer>
+  </main>
+</body>
+</html>
