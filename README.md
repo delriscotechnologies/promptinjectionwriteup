@@ -12,9 +12,9 @@
 
 This write-up documents a controlled lab with four LLM apps: a chatbot that keeps a secret key in its system prompt, a Discord moderation report, a webpage summarizer, and an email summarizer.
 
-Each example shows how the payload reaches the model, what changes in the response, and which controls reduce the risk.
+Each example shows how the payload reaches the model and what changes in the response.
 
-> Use these techniques only on systems you own or are explicitly authorized to test. Keys are redacted, model responses are shortened, and the sample data is fictional.
+> Use these techniques only on systems you own or are explicitly authorized to test. Keys are redacted and model responses are shortened.
 
 ## References
 
