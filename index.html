@@ -41,18 +41,24 @@
     pre { margin: 1.15rem 0 1.4rem; padding: .8rem 0 .8rem 1rem; border-inline-start: 2px solid var(--line); color: var(--ink); font: 400 clamp(.85rem, 1.8vw, .96rem)/1.65 ui-monospace, "SFMono-Regular", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
     pre code { font: inherit; }
     .voice { color: var(--accent); font-weight: 650; }
-    .readout { position: fixed; inset: 0 0 auto; z-index: 2; background: var(--paper); pointer-events: none; }
-    .readout[hidden] { display: none; }
-    .readout-inner { width: var(--measure); height: 2.25rem; margin-inline: auto; display: grid; grid-template-columns: auto 1fr 4ch; align-items: center; gap: .8rem; color: var(--muted); font: 500 .69rem/1 ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
-    .readout-label { letter-spacing: .12em; }
-    .readout-value { text-align: right; color: var(--accent); }
-    .ruler, .ruler::after { --tick: #56616a; background: repeating-linear-gradient(90deg,var(--tick) 0 1px,transparent 1px 30px) left bottom / 100% 100% no-repeat, repeating-linear-gradient(90deg,var(--tick) 0 1px,transparent 1px 6px) left bottom / 100% 50% no-repeat; }
-    .ruler { position: relative; height: .58rem; }
-    .ruler::after { --tick: var(--accent); position: absolute; inset: 0; content: ""; clip-path: inset(0 var(--remaining, 100%) 0 0); }
+    .readout {
+      position: fixed; z-index: 2; top: 50%; right: max(12px, env(safe-area-inset-right));
+      transform: translateY(-50%); width: 4px; height: min(38vh, 15rem);
+      overflow: hidden; border-radius: 4px; background: var(--line); pointer-events: none;
+    }
+    .readout::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, #568cff 0%, #36cda2 38%, #a2d55b 58%, #e5a143 78%, #ed5651 100%);
+      clip-path: inset(0 0 var(--remaining, 100%) 0);
+    }
+    @media (forced-colors: active) {
+      .readout { forced-color-adjust: none; background: GrayText; }
+      .readout::after { background: Highlight; }
+    }
     @media (max-width: 32rem) {
       :root { --measure: calc(100% - 2.25rem); }
       h1 { font-size: clamp(1.85rem, 11vw, 3.55rem); }
-      .readout-inner { height: 1.9rem; gap: .55rem; }
+      .readout { right: max(4px, env(safe-area-inset-right)); width: 3px; }
     }
     @media print {
       :root { color-scheme: light; --paper: #fff; --ink: #111; --body: #222; --muted: #444; --line: #aaa; --accent: #30495a; }
@@ -63,9 +69,7 @@
   <script src="reading-progress.js" defer></script>
 </head>
 <body>
-  <div class="readout" data-reading-progress role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
-    <div class="readout-inner" aria-hidden="true"><span class="readout-label">READ</span><span class="ruler"></span><span class="readout-value">000%</span></div>
-  </div>
+  <div class="readout" data-reading-progress role="progressbar" aria-label="Reading progress" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden></div>
   <main><article aria-labelledby="title">
     <header class="masthead">
       <h1 id="title">Direct and Indirect Prompt Injection</h1>

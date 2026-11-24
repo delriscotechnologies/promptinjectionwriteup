@@ -1,7 +1,6 @@
 (() => {
   const meter = document.querySelector('[data-reading-progress]');
   if (!meter) return;
-  const value = meter.querySelector('.readout-value');
   let frame = 0;
   let previous = -1;
 
@@ -14,7 +13,6 @@
     previous = percent;
     meter.style.setProperty('--remaining', (100 - percent) + '%');
     meter.setAttribute('aria-valuenow', String(percent));
-    value.textContent = String(percent).padStart(3, '0') + '%';
   }
 
   function schedule() {
