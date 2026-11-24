@@ -6,6 +6,15 @@
   <meta name="theme-color" content="#101112">
   <meta name="description" content="How direct and indirect prompt injection work, with Hack The Box Academy examples of a quoted price, a disclosed test key, and a Discord moderation report.">
   <title>Direct and Indirect Prompt Injection</title>
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Direct and Indirect Prompt Injection">
+  <meta property="og:url" content="https://delriscotechnologies.github.io/promptinjectionwriteup/">
+  <meta property="og:description" content="How a user message or a retrieved document can change an AI assistant’s response. Examples from Hack The Box Academy.">
+  <meta property="og:image" content="https://delriscotechnologies.github.io/promptinjectionwriteup/assets/prompt-injection-cover.jpg">
+  <meta property="og:image:width" content="1440">
+  <meta property="og:image:height" content="758">
+  <meta property="og:image:alt" content="Direct and Indirect Prompt Injection. A line of blue terminal characters leaves a folded document and becomes a prompt cursor.">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.png" type="image/png" sizes="64x64">
   <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
@@ -16,7 +25,10 @@
     *, *::before, *::after { box-sizing: border-box; }
     body { margin: 0; background: var(--paper); color: var(--body); font: 450 clamp(1.05rem, .98rem + .28vw, 1.18rem)/1.76 Manrope, system-ui, sans-serif; }
     main { width: var(--measure); margin-inline: auto; padding: clamp(5.2rem, 12vh, 8.5rem) 0 clamp(4rem, 10vh, 8rem); }
-    h1 { margin: 0 0 clamp(1.8rem, 5vw, 3rem); color: var(--ink); font: 400 clamp(3.35rem, 8.25vw, 6.2rem)/.96 "Instrument Serif", Georgia, serif; letter-spacing: -.022em; }
+    .masthead { display: grid; grid-template-columns: minmax(0,1fr) clamp(4.5rem, 13vw, 9.5rem); gap: clamp(.7rem, 2vw, 1.5rem); align-items: center; margin-bottom: clamp(1.8rem, 5vw, 3rem); }
+    .cover-art { display: block; overflow: hidden; mix-blend-mode: screen; }
+    .cover-art img { display: block; width: 200%; height: auto; transform: translateX(-50%); }
+    h1 { margin: 0; color: var(--ink); font: 400 clamp(3.35rem, 7.7vw, 5.18rem)/.96 "Instrument Serif", Georgia, serif; letter-spacing: -.022em; }
     h1 span { display: block; }
     p { margin: 0 0 1.22em; }
     p:last-child { margin-bottom: 0; }
@@ -44,13 +56,14 @@
     .ruler::after { --tick: var(--accent); position: absolute; inset: 0; content: ""; clip-path: inset(0 var(--remaining, 100%) 0 0); }
     @media (max-width: 32rem) {
       :root { --measure: calc(100% - 2.25rem); }
-      h1 { font-size: clamp(2.4rem, 12.2vw, 3.7rem); }
+      .masthead { grid-template-columns: minmax(0,1fr) clamp(2.75rem, 13vw, 4.5rem); gap: .5rem; }
+      h1 { font-size: clamp(1.85rem, 11vw, 3.55rem); }
       .readout-inner { height: 1.9rem; gap: .55rem; }
       .quote { font-size: .88em; }
     }
     @media print {
       :root { color-scheme: light; --paper: #fff; --ink: #111; --body: #222; --muted: #444; --line: #aaa; --accent: #30495a; }
-      .readout { display: none; } main { width: auto; padding: 0; } h1 { font-size: 38pt; }
+      .readout, .cover-art { display: none; } .masthead { display: block; } main { width: auto; padding: 0; } h1 { font-size: 38pt; }
       .quote { break-inside: avoid; }
     }
   </style>
@@ -61,7 +74,12 @@
     <div class="readout-inner" aria-hidden="true"><span class="readout-label">READ</span><span class="ruler"></span><span class="readout-value">000%</span></div>
   </div>
   <main><article aria-labelledby="title">
-    <h1 id="title">Direct and Indirect <span>Prompt Injection</span></h1>
+    <header class="masthead">
+      <h1 id="title">Direct and Indirect <span>Prompt Injection</span></h1>
+      <a class="cover-art" href="assets/prompt-injection-cover.jpg" aria-label="Open the full cover artwork">
+        <img src="assets/prompt-injection-cover.jpg" width="1440" height="758" alt="" decoding="async">
+      </a>
+    </header>
 
     <p class="lead">A language model reads the application’s instructions and the text it needs to process in the same context. Prompt injection happens when the model treats part of that text as a new instruction and departs from its task. A <strong>direct injection</strong> comes through the user’s message. An <strong>indirect injection</strong> comes through content the application reads, such as an email.</p>
 
