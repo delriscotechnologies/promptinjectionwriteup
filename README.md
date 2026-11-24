@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="prompt-injection-writeup.md">Full Write-Up</a>
+  <a href="https://delriscotechnologies.github.io/promptinjectionwriteup/">Full Write-Up</a>
 </p>
 
 ---
